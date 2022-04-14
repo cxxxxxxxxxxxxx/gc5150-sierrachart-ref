@@ -1,4 +1,4 @@
-# GC5150 Custom Studies
+# gc5150 Custom Studies
 
 Required Sierra Chart Version: 2368 (March 15, 2022) or higher
 
