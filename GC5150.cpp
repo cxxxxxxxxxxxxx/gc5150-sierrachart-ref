@@ -5,8 +5,8 @@
 ==============================================================================*/
 
 #include "sierrachart.h"
-SCDLLName("GC5150 Studies")
-const SCString ContactInformation = "GC5150, @gc5150 (twitter)";
+SCDLLName("gc5150 Studies")
+const SCString ContactInformation = "gc5150, @gc5150 (twitter)";
 
 SCDateTime GetNow(SCStudyInterfaceRef sc)
 {
@@ -18,7 +18,7 @@ SCDateTime GetNow(SCStudyInterfaceRef sc)
 
 /*==============================================================================
 	This study clears the Recent Bid and Ask Volume at the session start time(s)
-	Sierra added member functions to accomplish this per request
+	Sierra added member functions to accomplish this per request (SC ver 2367)
 	https://www.sierrachart.com/SupportBoard.php?ThreadID=71671
 ------------------------------------------------------------------------------*/
 SCSFExport scsf_AutoClearRecentBidAskVolume(SCStudyInterfaceRef sc)
