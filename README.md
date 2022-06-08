@@ -25,5 +25,7 @@ This study finds Fair Value Gaps for the given chart and draws based on configur
 Source File: [gc5150_FVG.cpp](./gc5150_FVG.cpp) 
 
 ---------------------------------
-#### Excellent ACSIL Reference(s) 
+#### *Excellent ACSIL Reference(s)* 
 [Kory Gill - 'New Study Template'](https://github.com/korygill/technical-analysis)
+
+[Frozen Tundra](https://github.com/FrozenTundraTrader/sierrachart)
