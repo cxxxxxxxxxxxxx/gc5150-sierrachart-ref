@@ -1,5 +1,5 @@
 #include "sierrachart.h"
-SCDLLName("gc5150 Studies")
+SCDLLName("gc5150 - DOM: Auto Clear Recent Bid/Ask Volume")
 const SCString ContactInformation = "gc5150, @gc5150 (twitter)";
 
 SCDateTime GetNow(SCStudyInterfaceRef sc)

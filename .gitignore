@@ -3,3 +3,5 @@
 !.gitignore
 !README.md
 !gc5150.cpp
+!gc5150_AutoClearRecentBidAskVolume.cpp
+!gc5150_FVG.cpp
