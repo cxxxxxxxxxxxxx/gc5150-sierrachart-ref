@@ -21,6 +21,7 @@ This study finds Fair Value Gaps for the given chart and draws based on configur
 - Enable/Disable FVG Up and Down gaps
 - Hide Gaps once filled
 - Specify maximum lookback for bars to process
+- Draw Midline
 
 Source File: [gc5150_FVG.cpp](./gc5150_FVG.cpp) 
 
