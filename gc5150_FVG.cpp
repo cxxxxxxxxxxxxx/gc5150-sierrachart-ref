@@ -21,8 +21,8 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 	SCInputRef Input_FVGUpDrawMidline = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGUpExtendRight = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGUpHideWhenFilled = sc.Input[SCInputIndex++];
-	SCInputRef Input_FVGUpMinGapSizeInTicks = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGUpAllowCopyToOtherCharts = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpMinGapSizeInTicks = sc.Input[SCInputIndex++];
 	
 	// FVG Down Settings
 	SCInputRef Input_FVGDnEnabled = sc.Input[SCInputIndex++];
@@ -33,8 +33,8 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 	SCInputRef Input_FVGDnDrawMidline = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGDnExtendRight = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGDnHideWhenFilled = sc.Input[SCInputIndex++];
-	SCInputRef Input_FVGDnMinGapSizeInTicks = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGDnAllowCopyToOtherCharts = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnMinGapSizeInTicks = sc.Input[SCInputIndex++];
 
 	// General Settings
 	SCInputRef Input_FVGMaxBarLookback = sc.Input[SCInputIndex++];
@@ -49,6 +49,7 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		float ToolEndValue;
 		bool FVGEnded;
 		bool FVGUp; // If not up, then it's down
+		unsigned int AddAsUserDrawnDrawing;
 	};
 
 	struct HLForBarIndex {
@@ -56,6 +57,13 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		float High;
 		float Low;
 	};
+
+	// Structs for FVG's and Bar High/Low/Index Data
+	std::vector<FVGRectangle>* FVGRectangles = reinterpret_cast<std::vector<FVGRectangle>*>(sc.GetPersistentPointer(0));
+	std::vector<HLForBarIndex> HLForBarIndexes;
+
+	// Tool Line Unique Number Start Point
+	int UniqueLineNumber = 8675309; // Jenny Jenny!
 
 	if (sc.SetDefaults)
 	{
@@ -100,14 +108,14 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		Input_FVGUpHideWhenFilled.SetDescription("Hide FVG Rectangle when Gap is Filled");
 		Input_FVGUpHideWhenFilled.SetYesNo(1);
 
+		Input_FVGUpAllowCopyToOtherCharts.Name = "FVG Up: Allow Copy To Other Charts";
+		Input_FVGUpAllowCopyToOtherCharts.SetDescription("Allow the FVG Rectangles to be Copied to Other Charts");
+		Input_FVGUpAllowCopyToOtherCharts.SetYesNo(0);
+
 		Input_FVGUpMinGapSizeInTicks.Name = "FVG Up: Minimum Gap Size in Ticks";
 		Input_FVGUpMinGapSizeInTicks.SetDescription("Only Process Gaps if greater or equal to Specified Gap Size");
 		Input_FVGUpMinGapSizeInTicks.SetInt(1);
 		Input_FVGUpMinGapSizeInTicks.SetIntLimits(1, INT_MAX);
-		
-		Input_FVGUpAllowCopyToOtherCharts.Name = "FVG Up: Allow Copy To Other Charts";
-		Input_FVGUpAllowCopyToOtherCharts.SetDescription("Allow the FVG Rectangles to be Copied to Other Charts");
-		Input_FVGUpAllowCopyToOtherCharts.SetYesNo(0);
 
 		// FVG Down
 		Input_FVGDnEnabled.Name = "FVG Down: Enabled";
@@ -143,14 +151,14 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		Input_FVGDnHideWhenFilled.SetDescription("Hide Rectangle when Gap is Filled");
 		Input_FVGDnHideWhenFilled.SetYesNo(1);
 
+		Input_FVGDnAllowCopyToOtherCharts.Name = "FVG Down: Allow Copy To Other Charts";
+		Input_FVGDnAllowCopyToOtherCharts.SetDescription("Allow the FVG Rectangles to be Copied to Other Charts");
+		Input_FVGDnAllowCopyToOtherCharts.SetYesNo(0);
+
 		Input_FVGDnMinGapSizeInTicks.Name = "FVG Down: Minimum Gap Size in Ticks";
 		Input_FVGDnMinGapSizeInTicks.SetDescription("Only Process Gaps if greater or equal to Specified Gap Size");
 		Input_FVGDnMinGapSizeInTicks.SetInt(1);
 		Input_FVGDnMinGapSizeInTicks.SetIntLimits(1, INT_MAX);
-
-		Input_FVGDnAllowCopyToOtherCharts.Name = "FVG Down: Allow Copy To Other Charts";
-		Input_FVGDnAllowCopyToOtherCharts.SetDescription("Allow the FVG Rectangles to be Copied to Other Charts");
-		Input_FVGDnAllowCopyToOtherCharts.SetYesNo(0);
 
 		// General settings
 		Input_FVGMaxBarLookback.Name = "Maximum Bar Lookback (0 = ALL)";
@@ -167,9 +175,31 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 	else
 		sc.DataStartIndex = sc.ArraySize - 1 - Input_FVGMaxBarLookback.GetInt() + MIN_START_INDEX;
 
-	std::vector<FVGRectangle> FVGRectangles;
-	std::vector<HLForBarIndex> HLForBarIndexes;
-	int UniqueLineNumber = 8675309; // Jenny Jenny!
+	if (FVGRectangles == NULL) {
+		// Array of FVGRectangle structs
+		FVGRectangles = new std::vector<FVGRectangle>;
+		sc.SetPersistentPointer(0, FVGRectangles);
+	}
+
+	// A study will be fully calculated/recalculated when it is added to a chart, any time its Input settings are changed,
+	// another study is added or removed from a chart, when the Study Window is closed with OK or the settings are applied.
+	// Or under other conditions which can cause a full recalculation.
+	if (sc.IsFullRecalculation || sc.LastCallToFunction)
+	{
+		// On a full recalculation non-user drawn advanced custom study drawings are automatically deleted
+		// So need to manually remove the User type drawings
+		for (int i = 0; i < FVGRectangles->size(); i++)
+		{
+			if (FVGRectangles->at(i).AddAsUserDrawnDrawing)
+				sc.DeleteUserDrawnACSDrawing(sc.ChartNumber, FVGRectangles->at(i).LineNumber);
+		}
+		// Drawings removed, now clear to avoid re-drawing them again
+		FVGRectangles->clear();
+
+		// Study is being removed, nothing more to do
+		if (sc.LastCallToFunction)
+			return;
+	}
 
 	// Min Gap Tick Size
 	float FVGUpMinTickSize = float(Input_FVGUpMinGapSizeInTicks.GetInt()) * sc.TickSize;
@@ -189,7 +219,7 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		HLForBarIndexes.push_back(TmpHLForBarIndex);
 
 		//
-		// Reference logic borrowed from this indicator
+		// H1, H3, L1, L3 logic borrowed from this indicator
 		// https://www.tradingview.com/script/u8mKo7pb-muh-gap-FAIR-VALUE-GAP-FINDER/
 		float L1 = sc.Low[BarIndex];
 		float H1 = sc.High[BarIndex];
@@ -209,9 +239,10 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 				BarIndex,// Tool.EndIndex
 				L1, // Tool.EndValue
 				false, // FVGEnded
-				true // FVGUp
+				true, // FVGUp
+				Input_FVGUpAllowCopyToOtherCharts.GetYesNo() // AddAsUserDrawnDrawing
 			};
-			FVGRectangles.push_back(TmpUpRect);
+			FVGRectangles->insert(FVGRectangles->end(), TmpUpRect);
 		}
 
 		// Store the FVG Dn
@@ -224,48 +255,40 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 				BarIndex,// Tool.EndIndex
 				H1, // Tool.EndValue
 				false, // FVGEnded
-				false  // FVGUp
+				false,  // FVGUp
+				Input_FVGDnAllowCopyToOtherCharts.GetYesNo() // AddAsUserDrawnDrawing
 			};
-			FVGRectangles.push_back(TmpDnRect);
+			FVGRectangles->insert(FVGRectangles->end(), TmpDnRect);
 		}
 	}
 
 	// Draw FVG Rectangles
-	for (int i = 0; i < FVGRectangles.size(); i++)
+	for (int i = 0; i < FVGRectangles->size(); i++)
 	{
 		s_UseTool Tool;
 		Tool.Clear();
 		Tool.ChartNumber = sc.ChartNumber;
-		Tool.LineNumber = FVGRectangles.at(i).LineNumber;
+		Tool.LineNumber = FVGRectangles->at(i).LineNumber;
 		Tool.DrawingType = DRAWING_RECTANGLEHIGHLIGHT;
+		Tool.AddMethod = UTAM_ADD_OR_ADJUST;
 
-		Tool.BeginIndex = FVGRectangles.at(i).ToolBeginIndex;
-		Tool.BeginValue = FVGRectangles.at(i).ToolBeginValue;
-		Tool.EndIndex = FVGRectangles.at(i).ToolEndIndex;
-		Tool.EndValue = FVGRectangles.at(i).ToolEndValue;
+		Tool.BeginIndex = FVGRectangles->at(i).ToolBeginIndex;
+		Tool.BeginValue = FVGRectangles->at(i).ToolBeginValue;
+		Tool.EndIndex = FVGRectangles->at(i).ToolEndIndex;
+		Tool.EndValue = FVGRectangles->at(i).ToolEndValue;
 
-		// Default to non-user drawing
-		Tool.AddAsUserDrawnDrawing = 0;
-		Tool.AllowCopyToOtherCharts = 0;
-
-		if (FVGRectangles.at(i).FVGUp)
+		if (FVGRectangles->at(i).FVGUp)
 		{
 			// FVG Up
 			Tool.Color = Input_FVGUpLineColor.GetColor();
 			Tool.SecondaryColor = Input_FVGUpFillColor.GetColor();
 			Tool.LineWidth = Input_FVGUpLineWidth.GetInt();
 			Tool.TransparencyLevel = Input_FVGUpTransparencyLevel.GetInt();
-			Tool.AddMethod = UTAM_ADD_OR_ADJUST;
-
-			if (Input_FVGUpDrawMidline.GetYesNo())
-				Tool.DrawMidline = 1;
+			Tool.DrawMidline = Input_FVGUpDrawMidline.GetYesNo();
 
 			// If we want to allow this to show up on other charts, need to set it to user drawing
-			if (Input_FVGUpAllowCopyToOtherCharts.GetYesNo())
-			{
-				Tool.AddAsUserDrawnDrawing = 1;
-				Tool.AllowCopyToOtherCharts = 1;
-			}
+			Tool.AddAsUserDrawnDrawing = FVGRectangles->at(i).AddAsUserDrawnDrawing;
+			Tool.AllowCopyToOtherCharts = FVGRectangles->at(i).AddAsUserDrawnDrawing;
 
 			// In our High/Low Bar Index, check if we have an equal or lower Low than the FVG
 			// If True, then this FVG will end at that index if extending Right
@@ -274,22 +297,24 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 				HLForBarIndexes.end(),
 				[=](HLForBarIndex& HLIndex)
 				{
-					return HLIndex.Index > FVGRectangles.at(i).ToolEndIndex && HLIndex.Low <= FVGRectangles.at(i).ToolBeginValue;
+					return HLIndex.Index > FVGRectangles->at(i).ToolEndIndex && HLIndex.Low <= FVGRectangles->at(i).ToolBeginValue;
 				}
 			);
 			// If true, we have an end index for this FVG and it hasn't yet been flagged as ended
-			if (it != HLForBarIndexes.end() && !FVGRectangles.at(i).FVGEnded)
+			if (it != HLForBarIndexes.end() && !FVGRectangles->at(i).FVGEnded)
 			{
 				// FVG has ended, so then see if we want to show it or not...
 				if (Input_FVGUpHideWhenFilled.GetYesNo())
 					Tool.HideDrawing = 1;
+				else
+					Tool.HideDrawing = 0;
 
 				// If here, we have an ending FVG that we want to show... Now need to see which EndIndex to use
 				if (Input_FVGUpExtendRight.GetYesNo())
 					Tool.EndIndex = it->Index; // Extending, so show it based on where we found the equal/lower bar low index
 
 				// Flag this as ended now
-				FVGRectangles.at(i).FVGEnded = true;
+				FVGRectangles->at(i).FVGEnded = true;
 			}
 			else
 			{
@@ -306,16 +331,11 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 			Tool.LineWidth = Input_FVGDnLineWidth.GetInt();
 			Tool.TransparencyLevel = Input_FVGDnTransparencyLevel.GetInt();
 			Tool.AddMethod = UTAM_ADD_OR_ADJUST;
-
-			if (Input_FVGDnDrawMidline.GetYesNo())
-				Tool.DrawMidline = 1;
+			Tool.DrawMidline = Input_FVGDnDrawMidline.GetYesNo();
 
 			// If we want to allow this to show up on other charts, need to set it to user drawing
-			if (Input_FVGDnAllowCopyToOtherCharts.GetYesNo())
-			{
-				Tool.AddAsUserDrawnDrawing = 1;
-				Tool.AllowCopyToOtherCharts = 1;
-			}
+			Tool.AddAsUserDrawnDrawing = FVGRectangles->at(i).AddAsUserDrawnDrawing;
+			Tool.AllowCopyToOtherCharts = FVGRectangles->at(i).AddAsUserDrawnDrawing;
 			
 			// In our High/Low Bar Index, check if we have an equal or higher High than the FVG
 			// If True, then this FVG will end at that index if extending Right
@@ -324,22 +344,24 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 				HLForBarIndexes.end(),
 				[=](HLForBarIndex& HLIndex)
 				{
-					return HLIndex.Index > FVGRectangles.at(i).ToolEndIndex && HLIndex.High >= FVGRectangles.at(i).ToolBeginValue;
+					return HLIndex.Index > FVGRectangles->at(i).ToolEndIndex && HLIndex.High >= FVGRectangles->at(i).ToolBeginValue;
 				}
 			);
 			// If true, we have an end index for this FVG and it hasn't yet been flagged as ended
-			if (it != HLForBarIndexes.end() && !FVGRectangles.at(i).FVGEnded)
+			if (it != HLForBarIndexes.end() && !FVGRectangles->at(i).FVGEnded)
 			{
 				// FVG has ended, so then see if we want to show it or not...
 				if (Input_FVGDnHideWhenFilled.GetYesNo())
 					Tool.HideDrawing = 1;
+				else
+					Tool.HideDrawing = 0;
 
 				// If here, we have an ending FVG that we want to show... Now need to see which EndIndex to use
 				if (Input_FVGDnExtendRight.GetYesNo())
 					Tool.EndIndex = it->Index; // Extending, so show it based on where we found the equal/lower bar low index
 
 				// Flag this as ended now
-				FVGRectangles.at(i).FVGEnded = true;
+				FVGRectangles->at(i).FVGEnded = true;
 			}
 			else
 			{
@@ -349,17 +371,5 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 			}
 		}
 		sc.UseTool(Tool);
-	}
-
-	// This study is being removed from the chart or the chart is being closed
-	if (sc.LastCallToFunction)
-	{
-		for (int i = 0; i < FVGRectangles.size(); i++)
-		{
-			if (Input_FVGUpAllowCopyToOtherCharts.GetYesNo() && FVGRectangles.at(i).FVGUp)
-				sc.DeleteUserDrawnACSDrawing(sc.ChartNumber, FVGRectangles.at(i).LineNumber);
-			if (Input_FVGDnAllowCopyToOtherCharts.GetYesNo() && !FVGRectangles.at(i).FVGUp)
-				sc.DeleteUserDrawnACSDrawing(sc.ChartNumber, FVGRectangles.at(i).LineNumber);
-		}
 	}
 }
