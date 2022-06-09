@@ -9,30 +9,35 @@ const SCString ContactInformation = "gc5150, @gc5150 (twitter)";
 ------------------------------------------------------------------------------*/
 SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 {
+	// Input Index
+	int SCInputIndex = 0;
+
 	// FVG Up Settings
-	SCInputRef Input_FVGUpLineWidth = sc.Input[0];
-	SCInputRef Input_FVGUpLineColor = sc.Input[1];
-	SCInputRef Input_FVGUpFillColor = sc.Input[2];
-	SCInputRef Input_FVGUpTransparencyLevel = sc.Input[3];
-	SCInputRef Input_FVGUpExtendRight = sc.Input[4];
-	SCInputRef Input_FVGUpDeleteWhenFilled = sc.Input[5];
-	SCInputRef Input_FVGUpMinGapSizeInTicks = sc.Input[6];
-	SCInputRef Input_FVGUpEnabled = sc.Input[7];
-	SCInputRef Input_FVGUpAllowCopyToOtherCharts = sc.Input[8];
+	SCInputRef Input_FVGUpEnabled = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpLineWidth = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpLineColor = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpFillColor = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpTransparencyLevel = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpDrawMidline = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpExtendRight = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpDeleteWhenFilled = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpMinGapSizeInTicks = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpAllowCopyToOtherCharts = sc.Input[SCInputIndex++];
 	
 	// FVG Down Settings
-	SCInputRef Input_FVGDnLineWidth = sc.Input[9];
-	SCInputRef Input_FVGDnLineColor = sc.Input[10];
-	SCInputRef Input_FVGDnFillColor = sc.Input[11];
-	SCInputRef Input_FVGDnTransparencyLevel = sc.Input[12];
-	SCInputRef Input_FVGDnExtendRight = sc.Input[13];
-	SCInputRef Input_FVGDnDeleteWhenFilled = sc.Input[14];
-	SCInputRef Input_FVGDnMinGapSizeInTicks = sc.Input[15];
-	SCInputRef Input_FVGDnEnabled = sc.Input[16];
-	SCInputRef Input_FVGDnAllowCopyToOtherCharts = sc.Input[17];
+	SCInputRef Input_FVGDnEnabled = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnLineWidth = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnLineColor = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnFillColor = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnTransparencyLevel = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnDrawMidline = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnExtendRight = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnDeleteWhenFilled = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnMinGapSizeInTicks = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnAllowCopyToOtherCharts = sc.Input[SCInputIndex++];
 
 	// General Settings
-	SCInputRef Input_FVGMaxBarLookback = sc.Input[18];
+	SCInputRef Input_FVGMaxBarLookback = sc.Input[SCInputIndex++];
 
 	const int MIN_START_INDEX = 2; // Need at least 3 bars [0,1,2]
 
@@ -62,6 +67,10 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		sc.AutoLoop = 0;
 
 		// FVG Up
+		Input_FVGUpEnabled.Name = "FVG Up: Enabled";
+		Input_FVGUpEnabled.SetDescription("Draw FVG Up Gaps");
+		Input_FVGUpEnabled.SetYesNo(1);
+
 		Input_FVGUpLineWidth.Name = "FVG Up: Line Width";
 		Input_FVGUpLineWidth.SetDescription("Width of FVG Rectangle Border");
 		Input_FVGUpLineWidth.SetInt(0);
@@ -79,6 +88,10 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		Input_FVGUpTransparencyLevel.SetInt(65);
 		Input_FVGUpTransparencyLevel.SetIntLimits(0, 100);
 
+		Input_FVGUpDrawMidline.Name = "FVG Up: Draw Midline (Set Line Width to 1 or Higher)";
+		Input_FVGUpDrawMidline.SetDescription("Draw Midline for FVG Rectangle. Requires Line Width of 1 or Higher.");
+		Input_FVGUpDrawMidline.SetYesNo(0);
+
 		Input_FVGUpExtendRight.Name = "FVG Up: Extend Right";
 		Input_FVGUpExtendRight.SetDescription("Extend FVG Rectangle to Right of Chart Until Filled");
 		Input_FVGUpExtendRight.SetYesNo(1);
@@ -92,15 +105,15 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		Input_FVGUpMinGapSizeInTicks.SetInt(1);
 		Input_FVGUpMinGapSizeInTicks.SetIntLimits(1, INT_MAX);
 		
-		Input_FVGUpEnabled.Name = "FVG Up: Enabled";
-		Input_FVGUpEnabled.SetDescription("Draw FVG Up Gaps");
-		Input_FVGUpEnabled.SetYesNo(1);
-
 		Input_FVGUpAllowCopyToOtherCharts.Name = "FVG Up: Allow Copy To Other Charts";
 		Input_FVGUpAllowCopyToOtherCharts.SetDescription("Allow the FVG Rectangles to be Copied to Other Charts");
 		Input_FVGUpAllowCopyToOtherCharts.SetYesNo(0);
 
 		// FVG Down
+		Input_FVGDnEnabled.Name = "FVG Down: Enabled";
+		Input_FVGDnEnabled.SetDescription("Draw FVG Down Gaps");
+		Input_FVGDnEnabled.SetYesNo(1);
+
 		Input_FVGDnLineWidth.Name = "FVG Down: Line Width";
 		Input_FVGDnLineWidth.SetDescription("Width of Rectangle Border");
 		Input_FVGDnLineWidth.SetInt(0);
@@ -118,6 +131,10 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		Input_FVGDnTransparencyLevel.SetInt(65);
 		Input_FVGDnTransparencyLevel.SetIntLimits(0, 100);
 
+		Input_FVGDnDrawMidline.Name = "FVG Down: Draw Midline (Set Line Width to 1 or Higher)";
+		Input_FVGDnDrawMidline.SetDescription("Draw Midline for FVG Rectangle. Requires Line Width of 1 or Higher.");
+		Input_FVGDnDrawMidline.SetYesNo(0);
+
 		Input_FVGDnExtendRight.Name = "FVG Down: Extend Right";
 		Input_FVGDnExtendRight.SetDescription("Extend FVG Rectangle to Right of Chart Until Filled");
 		Input_FVGDnExtendRight.SetYesNo(1);
@@ -130,10 +147,6 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		Input_FVGDnMinGapSizeInTicks.SetDescription("Only Process Gaps if greater or equal to Specified Gap Size");
 		Input_FVGDnMinGapSizeInTicks.SetInt(1);
 		Input_FVGDnMinGapSizeInTicks.SetIntLimits(1, INT_MAX);
-
-		Input_FVGDnEnabled.Name = "FVG Down: Enabled";
-		Input_FVGDnEnabled.SetDescription("Draw FVG Down Gaps");
-		Input_FVGDnEnabled.SetYesNo(1);
 
 		Input_FVGDnAllowCopyToOtherCharts.Name = "FVG Down: Allow Copy To Other Charts";
 		Input_FVGDnAllowCopyToOtherCharts.SetDescription("Allow the FVG Rectangles to be Copied to Other Charts");
@@ -244,6 +257,9 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 			Tool.TransparencyLevel = Input_FVGUpTransparencyLevel.GetInt();
 			Tool.AddMethod = UTAM_ADD_OR_ADJUST;
 
+			if (Input_FVGUpDrawMidline.GetYesNo())
+				Tool.DrawMidline = 1;
+
 			// If we want to allow this to show up on other charts, need to set it to user drawing
 			if (Input_FVGUpAllowCopyToOtherCharts.GetYesNo())
 			{
@@ -290,6 +306,9 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 			Tool.LineWidth = Input_FVGDnLineWidth.GetInt();
 			Tool.TransparencyLevel = Input_FVGDnTransparencyLevel.GetInt();
 			Tool.AddMethod = UTAM_ADD_OR_ADJUST;
+
+			if (Input_FVGDnDrawMidline.GetYesNo())
+				Tool.DrawMidline = 1;
 
 			// If we want to allow this to show up on other charts, need to set it to user drawing
 			if (Input_FVGDnAllowCopyToOtherCharts.GetYesNo())
