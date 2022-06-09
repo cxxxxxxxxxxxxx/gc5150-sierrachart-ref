@@ -20,7 +20,7 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 	SCInputRef Input_FVGUpTransparencyLevel = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGUpDrawMidline = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGUpExtendRight = sc.Input[SCInputIndex++];
-	SCInputRef Input_FVGUpDeleteWhenFilled = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGUpHideWhenFilled = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGUpMinGapSizeInTicks = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGUpAllowCopyToOtherCharts = sc.Input[SCInputIndex++];
 	
@@ -32,7 +32,7 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 	SCInputRef Input_FVGDnTransparencyLevel = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGDnDrawMidline = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGDnExtendRight = sc.Input[SCInputIndex++];
-	SCInputRef Input_FVGDnDeleteWhenFilled = sc.Input[SCInputIndex++];
+	SCInputRef Input_FVGDnHideWhenFilled = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGDnMinGapSizeInTicks = sc.Input[SCInputIndex++];
 	SCInputRef Input_FVGDnAllowCopyToOtherCharts = sc.Input[SCInputIndex++];
 
@@ -96,9 +96,9 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		Input_FVGUpExtendRight.SetDescription("Extend FVG Rectangle to Right of Chart Until Filled");
 		Input_FVGUpExtendRight.SetYesNo(1);
 
-		Input_FVGUpDeleteWhenFilled.Name = "FVG Up: Delete When Filled";
-		Input_FVGUpDeleteWhenFilled.SetDescription("Hide FVG Rectangle if Gap is Filled");
-		Input_FVGUpDeleteWhenFilled.SetYesNo(1);
+		Input_FVGUpHideWhenFilled.Name = "FVG Up: Hide When Filled";
+		Input_FVGUpHideWhenFilled.SetDescription("Hide FVG Rectangle when Gap is Filled");
+		Input_FVGUpHideWhenFilled.SetYesNo(1);
 
 		Input_FVGUpMinGapSizeInTicks.Name = "FVG Up: Minimum Gap Size in Ticks";
 		Input_FVGUpMinGapSizeInTicks.SetDescription("Only Process Gaps if greater or equal to Specified Gap Size");
@@ -139,9 +139,9 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		Input_FVGDnExtendRight.SetDescription("Extend FVG Rectangle to Right of Chart Until Filled");
 		Input_FVGDnExtendRight.SetYesNo(1);
 
-		Input_FVGDnDeleteWhenFilled.Name = "FVG Down: Delete When Filled";
-		Input_FVGDnDeleteWhenFilled.SetDescription("Hide Rectangle if Gap is Filled");
-		Input_FVGDnDeleteWhenFilled.SetYesNo(1);
+		Input_FVGDnHideWhenFilled.Name = "FVG Down: Hide When Filled";
+		Input_FVGDnHideWhenFilled.SetDescription("Hide Rectangle when Gap is Filled");
+		Input_FVGDnHideWhenFilled.SetYesNo(1);
 
 		Input_FVGDnMinGapSizeInTicks.Name = "FVG Down: Minimum Gap Size in Ticks";
 		Input_FVGDnMinGapSizeInTicks.SetDescription("Only Process Gaps if greater or equal to Specified Gap Size");
@@ -281,8 +281,8 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 			if (it != HLForBarIndexes.end() && !FVGRectangles.at(i).FVGEnded)
 			{
 				// FVG has ended, so then see if we want to show it or not...
-				if (Input_FVGUpDeleteWhenFilled.GetYesNo())
-					continue;
+				if (Input_FVGUpHideWhenFilled.GetYesNo())
+					Tool.HideDrawing = 1;
 
 				// If here, we have an ending FVG that we want to show... Now need to see which EndIndex to use
 				if (Input_FVGUpExtendRight.GetYesNo())
@@ -331,8 +331,8 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 			if (it != HLForBarIndexes.end() && !FVGRectangles.at(i).FVGEnded)
 			{
 				// FVG has ended, so then see if we want to show it or not...
-				if (Input_FVGDnDeleteWhenFilled.GetYesNo())
-					continue;
+				if (Input_FVGDnHideWhenFilled.GetYesNo())
+					Tool.HideDrawing = 1;
 
 				// If here, we have an ending FVG that we want to show... Now need to see which EndIndex to use
 				if (Input_FVGDnExtendRight.GetYesNo())
