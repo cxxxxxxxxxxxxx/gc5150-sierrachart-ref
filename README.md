@@ -64,4 +64,6 @@ Source File: [gc5150_NoMoPaperHands.cpp](./gc5150_NoMoPaperHands.cpp)
 #### *Excellent ACSIL Reference(s)* 
 [Kory Gill - 'New Study Template'](https://github.com/korygill/technical-analysis)
 
-[Frozen Tundra](https://github.com/FrozenTundraTrader/sierrachart)
+[Frozen Tundra - Sierra Github Repo](https://github.com/FrozenTundraTrader/sierrachart)
+
+[Scott Edwards - Building Sierra Chart Custom Studies](https://scottedwards.tech/post/building-sierra-chart-custom-studies)
