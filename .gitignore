@@ -5,3 +5,5 @@
 !gc5150.cpp
 !gc5150_AutoClearRecentBidAskVolume.cpp
 !gc5150_FVG.cpp
+!gc5150_TradingSystemBasedOnAlertConditionLimitOrder.cpp
+!gc5150_RSI.cpp
