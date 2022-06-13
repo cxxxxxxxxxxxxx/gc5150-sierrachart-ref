@@ -181,17 +181,13 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		sc.SetPersistentPointer(0, FVGRectangles);
 	}
 
-	// Hide Study
-	if (sc.HideStudy)
-		sc.FlagFullRecalculate = 1;
-
 	// A study will be fully calculated/recalculated when it is added to a chart, any time its Input settings are changed,
 	// another study is added or removed from a chart, when the Study Window is closed with OK or the settings are applied.
 	// Or under other conditions which can cause a full recalculation.
-	if (sc.IsFullRecalculation || sc.LastCallToFunction)
+	if (sc.IsFullRecalculation || sc.LastCallToFunction || sc.HideStudy)
 	{
 		// On a full recalculation non-user drawn advanced custom study drawings are automatically deleted
-		// So need to manually remove the User type drawings
+		// So need to manually remove the User type drawings. Same with hiding study, if user type, need to manually remove them
 		for (int i = 0; i < FVGRectangles->size(); i++)
 		{
 			if (FVGRectangles->at(i).AddAsUserDrawnDrawing)
@@ -200,10 +196,16 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		// Drawings removed, now clear to avoid re-drawing them again
 		FVGRectangles->clear();
 
-		// Study is being removed or hidden, nothing more to do
+		// Study is being removed nothing more to do
 		if (sc.LastCallToFunction || sc.HideStudy)
 			return;
 	}
+
+	// Clear out structure to avoid contually adding onto it and causing memory/performance issues
+	// TODO: Revist above logic. For now though we can't clear it until user type drawings are removed
+	// first so have to do it after that point
+	if (FVGRectangles != NULL)
+		FVGRectangles->clear();
 
 	// Min Gap Tick Size
 	float FVGUpMinTickSize = float(Input_FVGUpMinGapSizeInTicks.GetInt()) * sc.TickSize;
