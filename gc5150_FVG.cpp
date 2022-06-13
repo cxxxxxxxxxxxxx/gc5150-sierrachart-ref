@@ -181,6 +181,10 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		sc.SetPersistentPointer(0, FVGRectangles);
 	}
 
+	// Hide Study
+	if (sc.HideStudy)
+		sc.FlagFullRecalculate = 1;
+
 	// A study will be fully calculated/recalculated when it is added to a chart, any time its Input settings are changed,
 	// another study is added or removed from a chart, when the Study Window is closed with OK or the settings are applied.
 	// Or under other conditions which can cause a full recalculation.
@@ -196,8 +200,8 @@ SCSFExport scsf_FVG(SCStudyInterfaceRef sc)
 		// Drawings removed, now clear to avoid re-drawing them again
 		FVGRectangles->clear();
 
-		// Study is being removed, nothing more to do
-		if (sc.LastCallToFunction)
+		// Study is being removed or hidden, nothing more to do
+		if (sc.LastCallToFunction || sc.HideStudy)
 			return;
 	}
 
