@@ -41,7 +41,21 @@ This study is a modification of the included 'Trading System Based On Alert Cond
 - Option to use limit orders instead of market orders
 - Auto cancel orders if not filled within x amount of bars
 
-Source File: [gc5150_TradingSystemBasedOnAlertConditionLimitOrder.cpp](./gc5150_TradingSystemBasedOnAlertConditionLimitOrder.cpp)
+Source File: [gc5150_TradingSystemBasedOnAlertConditionLimitOrder.cpp](./gc5150_TradingSystemBasedOnAlertConditionLimitOrder.cpp) 
+
+----------------------------
+
+### No Mo Paper Hands
+This is a 'for fun' study that has issues of it's own. The idea is if you continually close trades too early
+then maybe you need a reminder not to... so you can load this study and it will continually lock trading when
+you have active positions. But the 'issues of it's own' is that you can always be extra super paper hand and just
+remove the study and then unlock trading again to bail :) One issue I ran into is with non Teton order routing.
+Basically client side vs server side. I believe I fixed the client side issues by just cancel/flatten all orders
+if you are stopped or profit target hit. Otherwise you have issues as discussed in this thread: https://www.sierrachart.com/SupportBoard.php?ThreadID=73330
+
+Source File: [gc5150_NoMoPaperHands.cpp](./gc5150_NoMoPaperHands.cpp) 
+
+----------------------------
 
 ---------------------------------
 #### *Excellent ACSIL Reference(s)* 
