@@ -1,10 +1,35 @@
-# Ignore everything except specific files
-*
-!.gitignore
-!README.md
-!gc5150.cpp
-!gc5150_AutoClearRecentBidAskVolume.cpp
-!gc5150_FVG.cpp
-!gc5150_TradingSystemBasedOnAlertConditionLimitOrder.cpp
-!gc5150_RSI.cpp
-!gc5150_NoMoPaperHands.cpp
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+#*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual Studio
+*.vs
