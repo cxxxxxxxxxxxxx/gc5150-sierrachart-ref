@@ -1,5 +1,8 @@
 ## gc5150 Custom Studies 
+### DISCLAIMER 
 
+##### The gc5150 custom studies are provided free of charge and “as is” without warranty of any kind, either expressed or implied and are to be used at your own risk. They may contain errors and/or issues that I'm unaware of. While I do use these myself you should first thoroughly back test in simulation mode before introducing any new studies into your trading environment. The source code is provided so you may examine and determine for yourself if it meets your needs. By downloading and installing you accept all liability for any positive or negative results that occur while using any of these studies. Thank you and I hope you find them useful. The goal here is learning, sharing and always improving. I am by no means an expert in Sierra ACSIL Programming. I'm doing this for learning purposes and may not have the most optimal design/code etc... I will continually improve these studies where I can.
+----------------------------
 
 ### DOM: Auto Clear Recent Bid/Ask Volume 
 
@@ -61,4 +64,6 @@ Source File: [gc5150_NoMoPaperHands.cpp](./gc5150_NoMoPaperHands.cpp)
 #### *Excellent ACSIL Reference(s)* 
 [Kory Gill - 'New Study Template'](https://github.com/korygill/technical-analysis)
 
-[Frozen Tundra](https://github.com/FrozenTundraTrader/sierrachart)
+[Frozen Tundra - Sierra Github Repo](https://github.com/FrozenTundraTrader/sierrachart)
+
+[Scott Edwards - Building Sierra Chart Custom Studies](https://scottedwards.tech/post/building-sierra-chart-custom-studies)
