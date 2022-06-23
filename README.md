@@ -60,6 +60,16 @@ Source File: [gc5150_NoMoPaperHands.cpp](./gc5150_NoMoPaperHands.cpp)
 
 ----------------------------
 
+### Rango Pinch
+This is a Pinch study based on MACD/ADX pinch-release. To visually see pinches and releases you can toss
+a MACD and ADX study on your chart and take a look. Try it on 512t chart and 1m chart. Some people will put
+it on multiple time frame/tick/volume charts and look at the confluence between the pinches forming and releasing.
+Written mainly as an exercise in learning Sierra studies, named after a Bearded Dragon.
+
+Source File: [gc5150_RangoPinch.cpp](./gc5150_RangoPinch.cpp) 
+
+----------------------------
+
 ---------------------------------
 #### *Excellent ACSIL Reference(s)* 
 [Kory Gill - 'New Study Template'](https://github.com/korygill/technical-analysis)
