@@ -70,6 +70,14 @@ Source File: [gc5150_RangoPinch.cpp](./gc5150_RangoPinch.cpp)
 
 ----------------------------
 
+### Output Bar Formula Value To Subgraph
+This study will take the result of the given formula and place the output in a subgraph. This was written as a helper study to avoid
+using Spreadsheets to perform the same function. We couldn't find an alerternative method to accomplish the same thing. So gave this a shot.
+
+Source File: [gc5150_OutputBarFormulaValueToSubgraph.cpp](./gc5150_OutputBarFormulaValueToSubgraph.cpp) 
+
+----------------------------
+
 ---------------------------------
 #### *Excellent ACSIL Reference(s)* 
 [Kory Gill - 'New Study Template'](https://github.com/korygill/technical-analysis)
