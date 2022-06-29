@@ -32,7 +32,7 @@ Source File: [gc5150_FVG.cpp](./gc5150_FVG.cpp)
 
 ### Forex Factory
 
-This study downloads the weeks Forex Events from [Forex Factory](https://www.forexfactory.com). Main features: 
+This study downloads the weeks Forex Events from [Forex Factory](https://www.forexfactory.com) and displays them on your chart. Main features: 
 - Filter by all currencies (Countries)
 - Filter by Expected Impact
 - Alerts via Subgraphs to color candles 10m before event
@@ -44,10 +44,11 @@ This study downloads the weeks Forex Events from [Forex Factory](https://www.for
 - Adjust font size
 - Adjust horizontal and vertical offset
 - Adjust event spacing
+- Note: Not a feature, but does NOT currently work with TPO charts
 
-Source File: [gc5150_ForexFactory.cpp](./gc5150_ForexFactory.cpp) 
-Requires: [nlohmann json.hpp include](./nlohmann/json.hpp) 
-Pre-Compiled DLL: [Compiled with SC 2408](./bin/gc5150_ForexFactory_64.dll) 
+Source File: [gc5150_ForexFactory.cpp](./gc5150_ForexFactory.cpp)  
+Requires: [nlohmann json.hpp include](./nlohmann/json.hpp)  
+Pre-Compiled DLL: [Compiled with SC 2408](./bin/gc5150_ForexFactory_64.dll)  
 
 ----------------------------
 
