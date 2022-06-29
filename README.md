@@ -30,6 +30,27 @@ Source File: [gc5150_FVG.cpp](./gc5150_FVG.cpp)
 
 ----------------------------
 
+### Forex Factory
+
+This study downloads the weeks Forex Events from [Forex Factory](https://www.forexfactory.com). Main features: 
+- Filter by all currencies (Countries)
+- Filter by Expected Impact
+- Alerts via Subgraphs to color candles 10m before event
+- Alerts via Subgraphs to color candles at time of event (alert active for 1 minute)
+- Hide previous events
+- Show tomorrow's events
+- Adjust color settings independently for past/upcoming/current events
+- Uses FF default colors for Event Impact markers
+- Adjust font size
+- Adjust horizontal and vertical offset
+- Adjust event spacing
+
+Source File: [gc5150_ForexFactory.cpp](./gc5150_ForexFactory.cpp) 
+Requires: [nlohmann json.hpp include](./nlohmann/json.hpp) 
+Pre-Compiled DLL: [Compiled with SC 2408](./bin/gc5150_ForexFactory_64.dll) 
+
+----------------------------
+
 ### RSI 
 This study is a mod of stock RSI to include additional lines to reference. Example: 
 - You might want a 70/30 set of lines
