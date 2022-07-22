@@ -16,7 +16,6 @@ ACS_DIRS=(
 # specific cpp custom study files
 OPTIONS=(
   -va
-  --include 'GC5150.cpp'
   --include 'gc5150_*.cpp'
   --include 'nlohmann'
   --include 'json.hpp'
