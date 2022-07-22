@@ -21,6 +21,10 @@
 //
 #pragma region Custom Study Notes
 //
+// Current Version: 2417
+// Last Updated: 7/22/2022
+//
+// 
 // Forex Factory
 // 
 // Study requires compiling with nlohmann json which is an external header file
@@ -61,7 +65,16 @@
 // Fair Value Gap
 //
 // TODO: Review Hide Logic to decrease amount of FVG's stored if we are not showing them at all, do we need them stored?
-//
+// 7/22/2022
+// Updated Default settings
+// - Vertical Offset to account for chart trading and not covering up trade positions
+// - Set line default value to 1 as assuming most people want to see the outline by default
+// - Set lookback to 400 bars as on 1m chart 200 is not enough IMO
+// ADDED:
+// - FVG Up and Down Subgraph Count. You can track the number of open up vs down
+// - Added Subgraphs for as many FVG's as Sierra would allow. Idea is to use this for trade management study for trailing stops/targets
+// - Added ability to use additional study data based on index of FVG candle to determine if we want to draw this FVG or not
+// 
 // 7/15/2022
 // ADDED: Line Style for FVG's. Helps when overlaying from different time frames to use different styles for each
 //
@@ -1752,10 +1765,6 @@ SCSFExport scsf_FairValueGap(SCStudyInterfaceRef sc)
 	int FVGUp_L_SubgraphOffset = 3;
 	int FVGDn_H_SubgraphOffset = 30;
 	int FVGDn_L_SubgraphOffset = 31;
-
-	// Additional data for FVG
-	//SCFloatArray Adx_Values;
-	//sc.GetStudyArrayUsingID(Input_Subgraph_AdxValues.GetStudyID(), Input_Subgraph_AdxValues.GetSubgraphIndex(), Adx_Values);
 
 	for (int i = FVGRectangles->size() - 1; i >= 0; i--)
 	{
