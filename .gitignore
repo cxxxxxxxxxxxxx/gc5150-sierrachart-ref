@@ -1,35 +1,23 @@
-# Prerequisites
-*.d
+# Helpful Guide
+# https://jasonstitt.com/gitignore-whitelisting-patterns
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Ignore everything
+*
+# But descend into specific directories
+!/bin
+!/chartbooks
+!/nlohmann
 
-# Precompiled Headers
-*.gch
-*.pch
+# Recursively allow files under specific directories
+!/bin/**
+!/chartbooks/**
+!/nlohmann/**
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-#*.dll
+# Allow gitignore
+!.gitignore
 
-# Fortran module files
-*.mod
-*.smod
+# Allow source sync script
+!sync_sierra.sh
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# Visual Studio
-*.vs
+# Allow specific study files
+!gc5150_Studies_2417.cpp
